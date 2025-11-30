@@ -42,7 +42,7 @@ optional arguments:
 [qssh] Sending commands to iTerm2...
 [qssh] Done.
 ```
-![alt text](https://github.com/ecceman/qssh/blob/main/screenshot.png)
+![alt text](https://github.com/ecceman/qssh/blob/main/qssh-screenshot.png)
 
 Some iTerm2 settings you might want to consider:
 - General → Window: Adjust window when changing font size
