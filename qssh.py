@@ -40,49 +40,32 @@ def load_hosts(data):
     return expanded
 
 
-def open_iterm(hosts, max_columns=6):
+def open_iterm(hosts):
     if not hosts:
         return
 
     apple_script = '''
     tell application "iTerm2"
-        create window with default profile
-        set currentRowSession to current session of current window
-        set currentSession to currentRowSession
+        activate
+        set newWindow to (create window with default profile)
     '''
 
     for idx, h in enumerate(hosts):
-        hostname = h["fqdn"].split('.')[0]
-        
+        hostname = h["fqdn"].split(".")[0]
         cmd = f"ssh {h['username']}@{h['fqdn']} {ssh_arguments}"
 
         if idx == 0:
-            # first host
+            # First host: use the first tab in the new window
             apple_script += f'''
-                tell currentSession
+                tell current session of newWindow
                     set name to "{hostname}"
                     write text "{cmd}"
                 end tell
             '''
-            continue
-
-        if len(hosts) <= 6:
-            # debug(f"[qssh] Opening new vertical split session for {hostname}")
-            # split vertically
-            apple_script += f'''
-                tell currentSession
-                    set newSession to split vertically with default profile
-                    tell newSession
-                        set name to "{hostname}"
-                        write text "{cmd}"
-                    end tell
-                    set currentSession to newSession
-                end tell
-            '''
         else:
-            # debug(f"[qssh] Opening new session for {hostname}")
+            # Subsequent hosts: create a new tab in the new window
             apple_script += f'''
-                tell current window
+                tell newWindow
                     create tab with default profile
                     tell current session
                         set name to "{hostname}"
@@ -90,7 +73,6 @@ def open_iterm(hosts, max_columns=6):
                     end tell
                 end tell
             '''
-
 
     apple_script += "\nend tell"
 
